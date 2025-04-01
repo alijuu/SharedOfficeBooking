@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\buildMultiTargeting\SharedOfficeBooking.Api.props" />
+</Project>

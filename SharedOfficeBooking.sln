@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedOfficeBooking.Api", "SharedOfficeBooking.Api\SharedOfficeBooking.Api.csproj", "{DC308CE0-B53D-4049-9B67-23CD219B405D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedOfficeBooking.Application", "SharedOfficeBooking.Application\SharedOfficeBooking.Application.csproj", "{D4F081E1-57A0-45B8-9034-3721F00ADB3C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedOfficeBooking.Domain", "SharedOfficeBooking.Domain\SharedOfficeBooking.Domain.csproj", "{4D0DC214-AD4E-4242-894A-AB4218DE17DB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedOfficeBooking.Infrastructure", "SharedOfficeBooking.Infrastructure\SharedOfficeBooking.Infrastructure.csproj", "{BAB68A3C-0EC7-4119-B0D7-4D3C8CD0AEDA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DC308CE0-B53D-4049-9B67-23CD219B405D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC308CE0-B53D-4049-9B67-23CD219B405D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC308CE0-B53D-4049-9B67-23CD219B405D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC308CE0-B53D-4049-9B67-23CD219B405D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4F081E1-57A0-45B8-9034-3721F00ADB3C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4F081E1-57A0-45B8-9034-3721F00ADB3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4F081E1-57A0-45B8-9034-3721F00ADB3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4F081E1-57A0-45B8-9034-3721F00ADB3C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4D0DC214-AD4E-4242-894A-AB4218DE17DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4D0DC214-AD4E-4242-894A-AB4218DE17DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4D0DC214-AD4E-4242-894A-AB4218DE17DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4D0DC214-AD4E-4242-894A-AB4218DE17DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BAB68A3C-0EC7-4119-B0D7-4D3C8CD0AEDA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BAB68A3C-0EC7-4119-B0D7-4D3C8CD0AEDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BAB68A3C-0EC7-4119-B0D7-4D3C8CD0AEDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BAB68A3C-0EC7-4119-B0D7-4D3C8CD0AEDA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
