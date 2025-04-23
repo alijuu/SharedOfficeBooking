@@ -1,14 +1,15 @@
+global using SharedOfficeBooking.Domain.Entities;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using SharedOfficeBooking;
 using SharedOfficeBooking.Domain.Entities;
 using SharedOfficeBooking.Infrastructure.Helpers;
+using SharedOfficeBooking.Application;
 using SharedOfficeBooking.Infrastructure.Repositories;
-using Swashbuckle.AspNetCore.SwaggerGen;
+using SharedOfficeBooking.Infrastructure.Repositories.Workspace;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,6 +39,8 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 builder.Services.AddScoped<RoleManager<IdentityRole>>();
 builder.Services.AddScoped<UserManager<ApplicationUser>>();
 // builder.Services.AddCustomCors("AllowAllOrigins");
+builder.Services.AddScoped<IWorkspaceRepository, WorkspaceRepository>();
+
 var jwtSettings = builder.Configuration.GetSection("JWT").Get<Configuration.JwtSettings>();
 builder.Services.Configure<Configuration.JwtSettings>(builder.Configuration.GetSection("JWT"));
 var key = Encoding.ASCII.GetBytes(jwtSettings.Secret); 
@@ -77,6 +80,7 @@ builder.Services.AddCors(options =>
 });
 
 
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 var app = builder.Build();
 
