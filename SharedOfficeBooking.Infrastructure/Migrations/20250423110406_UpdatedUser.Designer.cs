@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SharedOfficeBooking.Infrastructure.Repositories;
 
@@ -11,9 +12,11 @@ using SharedOfficeBooking.Infrastructure.Repositories;
 namespace SharedOfficeBooking.Infrastructure.Migrations
 {
     [DbContext(typeof(SharedOfficeBookingDbContext))]
-    partial class SharedOfficeBookingDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250423110406_UpdatedUser")]
+    partial class UpdatedUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
