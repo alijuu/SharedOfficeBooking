@@ -9,4 +9,9 @@ public class SharedOfficeBookingDbContext : IdentityDbContext<ApplicationUser>
     public SharedOfficeBookingDbContext(DbContextOptions<SharedOfficeBookingDbContext> options) : base(options)
     {
     }
+    
+    public DbSet<ApplicationUser> Users => Set<ApplicationUser>();
+    public DbSet<Domain.Entities.Workspace> Workspaces => Set<Domain.Entities.Workspace>();
+    public DbSet<Desk> Desks => Set<Desk>();
+    public DbSet<Booking> Bookings => Set<Booking>();
 }
