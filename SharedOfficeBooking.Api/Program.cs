@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using SharedOfficeBooking;
 using SharedOfficeBooking.Domain.Entities;
+using SharedOfficeBooking.Infrastructure.Helpers;
 using SharedOfficeBooking.Infrastructure.Repositories;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -36,7 +37,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     .AddDefaultTokenProviders();
 builder.Services.AddScoped<RoleManager<IdentityRole>>();
 builder.Services.AddScoped<UserManager<ApplicationUser>>();
-
+// builder.Services.AddCustomCors("AllowAllOrigins");
 var jwtSettings = builder.Configuration.GetSection("JWT").Get<Configuration.JwtSettings>();
 builder.Services.Configure<Configuration.JwtSettings>(builder.Configuration.GetSection("JWT"));
 var key = Encoding.ASCII.GetBytes(jwtSettings.Secret); 
@@ -63,6 +64,20 @@ builder.Services.AddAuthentication(options =>
 
     });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("DevCorsPolicy", policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:5173") // 👈 use your frontend origin here
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials(); // 👈 allow credentials
+    });
+});
+
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -71,7 +86,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseCors("DevCorsPolicy");
+// app.UseCors("AllowAllOrigins");
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
