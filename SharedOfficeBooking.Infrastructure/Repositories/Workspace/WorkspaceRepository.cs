@@ -1,4 +1,3 @@
-using System.Linq.Dynamic.Core;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using SharedOfficeBooking.Domain.Entities;
@@ -11,26 +10,58 @@ public class WorkspaceRepository : IWorkspaceRepository
     private readonly SharedOfficeBookingDbContext _db;
     public WorkspaceRepository(SharedOfficeBookingDbContext db) => _db = db;
 
-    public async Task<Domain.Entities.Workspace> AddAsync(Domain.Entities.Workspace ws)
+    public async Task<ServiceResponse<Domain.Entities.Workspace>> AddAsync(Domain.Entities.Workspace ws)
     {
-        _db.Workspaces.Add(ws);
-        await _db.SaveChangesAsync();
-        return ws;
+        var response = new ServiceResponse<Domain.Entities.Workspace>();
+        try
+        {
+            _db.Workspaces.Add(ws);
+            await _db.SaveChangesAsync();
+            response.Data = ws;
+            response.Message = "Workspace created.";
+        }
+        catch (Exception ex)
+        {
+            response.Success = false;
+            response.Message = ex.Message;
+        }
+        return response;
     }
 
-    public async Task DeleteAsync(int id)
+    public async Task<ServiceResponse<string>> DeleteAsync(int id)
     {
+        var response = new ServiceResponse<string>();
         var ws = await _db.Workspaces.FindAsync(id);
-        if (ws == null) throw new KeyNotFoundException();
+        if (ws == null)
+        {
+            response.Success = false;
+            response.Message = "Workspace not found.";
+            return response;
+        }
+
         _db.Workspaces.Remove(ws);
         await _db.SaveChangesAsync();
+        response.Data = "Workspace deleted.";
+        return response;
     }
 
-    public async Task<Domain.Entities.Workspace?> GetByIdAsync(int id)
-        => await _db.Workspaces
+    public async Task<ServiceResponse<Domain.Entities.Workspace?>> GetByIdAsync(int id)
+    {
+        var response = new ServiceResponse<Domain.Entities.Workspace?>();
+        var ws = await _db.Workspaces
             .Include(w => w.Desks)
             .FirstOrDefaultAsync(w => w.Id == id);
-
+        if (ws == null)
+        {
+            response.Success = false;
+            response.Message = "Workspace not found.";
+        }
+        else
+        {
+            response.Data = ws;
+        }
+        return response;
+    }
     public async Task<PaginatedResult<Domain.Entities.Workspace>> GetPagedAsync(int page, int pageSize)
     {
         var query = _db.Workspaces.AsQueryable();
@@ -51,26 +82,52 @@ public class WorkspaceRepository : IWorkspaceRepository
     }
 
 
-    public async Task<Domain.Entities.Workspace> UpdateAsync(Domain.Entities.Workspace ws)
+    public async Task<ServiceResponse<Domain.Entities.Workspace>> UpdateAsync(int id, Domain.Entities.Workspace updatedWs)
     {
-        _db.Workspaces.Update(ws);
+        var serviceResponse = new ServiceResponse<Domain.Entities.Workspace>();
+
+        var existingWs = await _db.Workspaces.FindAsync(id);
+        if (existingWs == null)
+        {
+            serviceResponse.Success = false;
+            serviceResponse.Message = $"Workspace with ID {id} not found.";
+            return serviceResponse;
+        }
+
+        // Update fields
+        existingWs.Name = updatedWs.Name;
+        existingWs.Address = updatedWs.Address;
+        existingWs.Email = updatedWs.Email;
+        existingWs.Phone = updatedWs.Phone;
+        existingWs.ImageUrl = updatedWs.ImageUrl;
+        existingWs.Description = updatedWs.Description;
+        existingWs.FloorPlan = updatedWs.FloorPlan;
+
+        _db.Workspaces.Update(existingWs);
         await _db.SaveChangesAsync();
-        return ws;
+
+        serviceResponse.Data = existingWs;
+        serviceResponse.Message = "Workspace updated successfully";
+        return serviceResponse;
     }
 
-    public async Task GenerateDesksFromFloorPlanAsync(int workspaceId)
+    public async Task<ServiceResponse<string>> GenerateDesksFromFloorPlanAsync(int workspaceId)
     {
+        var response = new ServiceResponse<string>();
         var ws = await _db.Workspaces.FindAsync(workspaceId);
-        if (ws == null) throw new KeyNotFoundException();
+        if (ws == null)
+        {
+            response.Success = false;
+            response.Message = "Workspace not found.";
+            return response;
+        }
 
         var matrix = JsonSerializer.Deserialize<List<List<int>>>(ws.FloorPlan)
                      ?? new List<List<int>>();
 
-        // clear existing desks
         var existing = _db.Desks.Where(d => d.WorkspaceId == workspaceId);
         _db.Desks.RemoveRange(existing);
 
-        // create new
         for (int r = 0; r < matrix.Count; r++)
         {
             for (int c = 0; c < matrix[r].Count; c++)
@@ -87,5 +144,7 @@ public class WorkspaceRepository : IWorkspaceRepository
         }
 
         await _db.SaveChangesAsync();
+        response.Data = "Desks generated from floor plan.";
+        return response;
     }
 }

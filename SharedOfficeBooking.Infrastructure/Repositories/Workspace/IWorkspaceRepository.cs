@@ -4,14 +4,14 @@ namespace SharedOfficeBooking.Infrastructure.Repositories.Workspace;
 
 public interface IWorkspaceRepository
 {
-    Task<Domain.Entities.Workspace> AddAsync(Domain.Entities.Workspace ws);
-    Task<Domain.Entities.Workspace?> GetByIdAsync(int id);
+    Task<ServiceResponse<Domain.Entities.Workspace>> AddAsync(Domain.Entities.Workspace ws);
+    Task<ServiceResponse<Domain.Entities.Workspace>?> GetByIdAsync(int id);
     Task<PaginatedResult<Domain.Entities.Workspace>> GetPagedAsync(int page, int pageSize);
-    Task<Domain.Entities.Workspace> UpdateAsync(Domain.Entities.Workspace ws);
-    Task DeleteAsync(int id);
+    Task<ServiceResponse<Domain.Entities.Workspace>> UpdateAsync(int id, Domain.Entities.Workspace updatedWs);
+    Task<ServiceResponse<string>> DeleteAsync(int id);
 
     /// <summary>
     /// Reads ws.FloorPlanJson, creates Desk rows×cols where cell==1
     /// </summary>
-    Task GenerateDesksFromFloorPlanAsync(int workspaceId);
+    Task<ServiceResponse<string>> GenerateDesksFromFloorPlanAsync(int workspaceId);
 }

@@ -26,12 +26,22 @@ public class WorkspaceController : ControllerBase
     public async Task<IActionResult> Create([FromBody] WorkspaceCreateDto dto)
     {
         var workspace = _mapper.Map<Workspace>(dto);
+        var createResponse = await _repo.AddAsync(workspace);
 
-        var created = await _repo.AddAsync(workspace);
-        await _repo.GenerateDesksFromFloorPlanAsync(created.Id);
+        if (!createResponse.Success)
+            return BadRequest(createResponse);
 
-        var resultDto = _mapper.Map<WorkspaceResponseDto>(created);
-        return CreatedAtAction(nameof(GetById), new { id = created.Id }, resultDto);
+        var generateDesksResponse = await _repo.GenerateDesksFromFloorPlanAsync(createResponse.Data!.Id);
+        if (!generateDesksResponse.Success)
+            return BadRequest(generateDesksResponse);
+
+        var resultDto = _mapper.Map<WorkspaceResponseDto>(createResponse.Data);
+        return CreatedAtAction(nameof(GetById), new { id = resultDto.Id }, new ServiceResponse<WorkspaceResponseDto>
+        {
+            Data = resultDto,
+            Message = "Workspace created successfully.",
+            Success = true
+        });
     }
 
 
@@ -39,13 +49,21 @@ public class WorkspaceController : ControllerBase
     [AllowAnonymous]
     public async Task<IActionResult> GetById(int id)
     {
-        var ws = await _repo.GetByIdAsync(id);
-        if (ws == null) return NotFound();
-        return Ok(ws);
+        var response = await _repo.GetByIdAsync(id);
+        if (!response.Success)
+            return NotFound(response);
+
+        var dto = _mapper.Map<WorkspaceResponseDto>(response.Data);
+        return Ok(new ServiceResponse<WorkspaceResponseDto>
+        {
+            Data = dto,
+            Message = "Workspace retrieved.",
+            Success = true
+        });
     }
 
     [HttpGet("get")]
-    public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+    public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 20)
     {
         var result = await _repo.GetPagedAsync(page, pageSize);
 
@@ -66,25 +84,33 @@ public class WorkspaceController : ControllerBase
     [HttpPut("update/{id:int}")]
     public async Task<IActionResult> Update(int id, [FromBody] WorkspaceUpdateDto dto)
     {
-        if (id != dto.Id) return BadRequest("Workspace ID mismatch.");
-
-        // Map the DTO to the Workspace entity
         var workspace = _mapper.Map<Workspace>(dto);
 
-        // Update the workspace in the repository
-        var updated = await _repo.UpdateAsync(workspace);
-        await _repo.GenerateDesksFromFloorPlanAsync(updated.Id);
+        var response = await _repo.UpdateAsync(id, workspace);
 
-        // Map the updated workspace to the response DTO
-        var resultDto = _mapper.Map<WorkspaceResponseDto>(updated);
-        return Ok(resultDto);
+        if (!response.Success)
+        {
+            return NotFound(response);
+        }
+
+        await _repo.GenerateDesksFromFloorPlanAsync(id);
+
+        var resultDto = _mapper.Map<WorkspaceResponseDto>(response.Data);
+        return Ok(new ServiceResponse<WorkspaceResponseDto>
+        {
+            Data = resultDto,
+            Success = true,
+            Message = "Workspace updated successfully"
+        });
     }
 
 
     [HttpDelete("delete/{id:int}")]
     public async Task<IActionResult> Delete(int id)
     {
-        await _repo.DeleteAsync(id);
-        return NoContent();
+        var response = await _repo.DeleteAsync(id);
+        if (!response.Success)
+            return NotFound(response);
+        return Ok(response);
     }
 }
