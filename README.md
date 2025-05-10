@@ -3,7 +3,7 @@
 This is the **backend** of the **Shared Office Booking** platform, built with **.NET 8**, **Entity Framework Core**, and **Docker** for database orchestration.
 
 The **frontend** is located in a separate repository:  
-👉 [Frontend Repository]([https://github.com/your-org/frontend-repo](https://github.com/alijuu/SharedOfficeBookingClient))
+👉 [Frontend Repository](https://github.com/alijuu/SharedOfficeBookingClient)
 
 ---
 
@@ -20,8 +20,8 @@ The **frontend** is located in a separate repository:
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-org/backend-repo.git
-cd backend-repo
+git clone https://github.com/your-org/backend-repo.git](https://github.com/alijuu/SharedOfficeBooking
+cd SharedOfficeBooking
 ```
 
 ### 2. Start the Database
@@ -47,32 +47,3 @@ Run the backend server:
 ```bash
 dotnet run --project .\SharedOfficeBooking.Api\
 ```
-
-## 💻 Frontend Setup
-
-The frontend is hosted in a separate repository.
-
-### Steps:
-
-1. Clone the frontend repo:
-
-```bash
-git clone https://github.com/your-org/frontend-repo.git
-cd frontend-repo
-```
-
-2. Install dependencies:
-
-```bash
-npm install
-```
-
-3. Start the development server:
-
-```bash
-npm run dev
-```
-
-By default, the frontend should be available at `http://localhost:5173`
-
----
