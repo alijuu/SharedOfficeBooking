@@ -20,7 +20,7 @@ The **frontend** is located in a separate repository:
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-org/backend-repo.git](https://github.com/alijuu/SharedOfficeBooking
+git clone https://github.com/alijuu/SharedOfficeBooking
 cd SharedOfficeBooking
 ```
 
