@@ -24,5 +24,8 @@ public class MappingProfile : Profile
         CreateMap<WorkspaceUpdateDto, Workspace>()
             .ForMember(dest => dest.FloorPlan,
                 opt => opt.MapFrom(src => FloorPlanHelper.SerializeMatrix(src.FloorPlan)));
+        
+        CreateMap<Booking, BookingResponseDto>().ReverseMap();
+        CreateMap<BookingCreateDto, Booking>().ReverseMap();
     }
 }
