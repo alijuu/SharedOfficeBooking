@@ -11,4 +11,6 @@ public class Booking
     public DateTime EndTime { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public bool IsApproved { get; set; } = true; 
+    
+    public BookingType Type { get; set; } = BookingType.Hour;
 }

@@ -26,6 +26,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\SharedOfficeBooking.Application\SharedOfficeBooking.Application.csproj" />
       <ProjectReference Include="..\SharedOfficeBooking.Domain\SharedOfficeBooking.Domain.csproj" />
     </ItemGroup>
     

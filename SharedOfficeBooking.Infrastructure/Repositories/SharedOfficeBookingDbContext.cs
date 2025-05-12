@@ -13,5 +13,5 @@ public class SharedOfficeBookingDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<ApplicationUser> Users => Set<ApplicationUser>();
     public DbSet<Domain.Entities.Workspace> Workspaces => Set<Domain.Entities.Workspace>();
     public DbSet<Desk> Desks => Set<Desk>();
-    public DbSet<Booking> Bookings => Set<Booking>();
+    public DbSet<Domain.Entities.Booking> Bookings => Set<Domain.Entities.Booking>();
 }
