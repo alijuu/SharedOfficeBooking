@@ -27,5 +27,8 @@ public class MappingProfile : Profile
         
         CreateMap<Booking, BookingResponseDto>().ReverseMap();
         CreateMap<BookingCreateDto, Booking>().ReverseMap();
+        
+        CreateMap<Desk, DeskResponseDto>().ReverseMap();
+
     }
 }

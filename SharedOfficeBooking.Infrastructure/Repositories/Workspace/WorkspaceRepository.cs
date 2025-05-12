@@ -125,16 +125,21 @@ public class WorkspaceRepository : IWorkspaceRepository
         var matrix = JsonSerializer.Deserialize<List<List<int>>>(ws.FloorPlan)
                      ?? new List<List<int>>();
 
+        // Remove existing desks
         var existing = _db.Desks.Where(d => d.WorkspaceId == workspaceId);
         _db.Desks.RemoveRange(existing);
+        await _db.SaveChangesAsync();
 
+        var deskList = new List<Domain.Entities.Desk>();
+
+        // Step 1: Add desks for every '1' in matrix
         for (int r = 0; r < matrix.Count; r++)
         {
             for (int c = 0; c < matrix[r].Count; c++)
             {
                 if (matrix[r][c] == 1)
                 {
-                    _db.Desks.Add(new Desk
+                    deskList.Add(new Domain.Entities.Desk
                     {
                         WorkspaceId = workspaceId,
                         Code = $"R{r + 1}C{c + 1}"
@@ -143,8 +148,30 @@ public class WorkspaceRepository : IWorkspaceRepository
             }
         }
 
+        _db.Desks.AddRange(deskList);
+        await _db.SaveChangesAsync(); // Save desks to generate IDs
+
+        // Step 2: Replace 1s in matrix with actual desk IDs (in insertion order)
+        int deskIndex = 0;
+        for (int r = 0; r < matrix.Count; r++)
+        {
+            for (int c = 0; c < matrix[r].Count; c++)
+            {
+                if (matrix[r][c] == 1)
+                {
+                    matrix[r][c] = deskList[deskIndex].Id;
+                    deskIndex++;
+                }
+            }
+        }
+
+        // Step 3: Save the updated matrix back to the workspace
+        ws.FloorPlan = JsonSerializer.Serialize(matrix);
+        _db.Workspaces.Update(ws);
         await _db.SaveChangesAsync();
-        response.Data = "Desks generated from floor plan.";
+
+        response.Data = "Desks generated and floor plan updated with desk IDs.";
         return response;
     }
+
 }

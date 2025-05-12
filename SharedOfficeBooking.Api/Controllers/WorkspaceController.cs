@@ -34,8 +34,10 @@ public class WorkspaceController : ControllerBase
         var generateDesksResponse = await _repo.GenerateDesksFromFloorPlanAsync(createResponse.Data!.Id);
         if (!generateDesksResponse.Success)
             return BadRequest(generateDesksResponse);
+        
+        var updatedWorkspace = await _repo.GetByIdAsync(createResponse.Data.Id);
 
-        var resultDto = _mapper.Map<WorkspaceResponseDto>(createResponse.Data);
+        var resultDto = _mapper.Map<WorkspaceResponseDto>(updatedWorkspace.Data);
         return CreatedAtAction(nameof(GetById), new { id = resultDto.Id }, new ServiceResponse<WorkspaceResponseDto>
         {
             Data = resultDto,

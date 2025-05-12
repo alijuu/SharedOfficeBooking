@@ -10,6 +10,7 @@ using SharedOfficeBooking.Infrastructure.Helpers;
 using SharedOfficeBooking.Application;
 using SharedOfficeBooking.Infrastructure.Repositories;
 using SharedOfficeBooking.Infrastructure.Repositories.Booking;
+using SharedOfficeBooking.Infrastructure.Repositories.Desk;
 using SharedOfficeBooking.Infrastructure.Repositories.Workspace;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -42,6 +43,7 @@ builder.Services.AddScoped<UserManager<ApplicationUser>>();
 // builder.Services.AddCustomCors("AllowAllOrigins");
 builder.Services.AddScoped<IWorkspaceRepository, WorkspaceRepository>();
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+builder.Services.AddScoped<IDeskRepository, DeskRepository>();
 
 var jwtSettings = builder.Configuration.GetSection("JWT").Get<Configuration.JwtSettings>();
 builder.Services.Configure<Configuration.JwtSettings>(builder.Configuration.GetSection("JWT"));
