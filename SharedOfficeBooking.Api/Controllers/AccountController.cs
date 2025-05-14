@@ -6,7 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using SharedOfficeBooking.Application.Dtos;
-using SharedOfficeBooking.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace SharedOfficeBooking.Controllers;
 
@@ -140,4 +141,28 @@ public class AccountController : ControllerBase
         return new JwtSecurityTokenHandler().WriteToken(token);
 
     }
+    
+    [HttpGet("user")]
+    [Authorize]
+    public async Task<IActionResult> GetUserInfo()
+    {
+        var username = User.Identity?.Name;
+        if (string.IsNullOrEmpty(username))
+            return Unauthorized(new { message = "User not authenticated" });
+
+        var user = await _userManager.FindByNameAsync(username);
+        if (user == null)
+            return NotFound(new { message = "User not found" });
+
+        var roles = await _userManager.GetRolesAsync(user);
+
+        return Ok(new
+        {
+            id = user.Id,
+            email = user.Email,
+            username = user.UserName,
+            roles = roles
+        });
+    }
+
 }
