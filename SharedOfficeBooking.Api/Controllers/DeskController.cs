@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SharedOfficeBooking.Infrastructure.Repositories.Desk;
 
@@ -23,4 +24,18 @@ public class DeskController : ControllerBase
 
         return Ok(result);
     }
+    
+    //[Authorize]
+    [HttpGet("workspace/{workspaceId}/booked-now")]
+    public async Task<IActionResult> GetCurrentlyBookedDesks(int workspaceId)
+    {
+        var response = await _deskRepository.GetCurrentlyBookedDesksByWorkspaceId(workspaceId);
+        if (!response.Success)
+        {
+            return BadRequest(response);
+        }
+
+        return Ok(response);
+    }
+
 }

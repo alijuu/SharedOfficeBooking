@@ -7,4 +7,5 @@ public interface IDeskRepository
 {
     Task<ServiceResponse<List<DeskResponseDto>>> GetDesksByWorkspaceIdAsync(int workspaceId);
 
+    Task<ServiceResponse<List<DeskResponseDto>>> GetCurrentlyBookedDesksByWorkspaceId(int workspaceId);
 }

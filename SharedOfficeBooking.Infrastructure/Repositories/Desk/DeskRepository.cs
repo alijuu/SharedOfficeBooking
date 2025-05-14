@@ -41,4 +41,28 @@ public class DeskRepository : IDeskRepository
         response.Data = deskDtos;
         return response;
     }
+    
+    public async Task<ServiceResponse<List<DeskResponseDto>>> GetCurrentlyBookedDesksByWorkspaceId(int workspaceId)
+    {
+        var now = DateTime.UtcNow;
+
+        var bookedDesks = await _context.Bookings
+            .Where(b => b.Desk.WorkspaceId == workspaceId &&
+                        b.StartTime <= now &&
+                        b.EndTime >= now)
+            .Select(b => new DeskResponseDto
+            {
+                Id = b.Desk.Id,
+                Code = b.Desk.Code,
+                WorkspaceId = b.Desk.WorkspaceId
+            })
+            .Distinct()
+            .ToListAsync();
+
+        return new ServiceResponse<List<DeskResponseDto>>
+        {
+            Data = bookedDesks
+        };
+    }
+
 }
