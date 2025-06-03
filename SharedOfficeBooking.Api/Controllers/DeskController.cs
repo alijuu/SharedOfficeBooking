@@ -26,7 +26,7 @@ public class DeskController : ControllerBase
     }
     
     //[Authorize]
-    [HttpGet("workspace/{workspaceId}/booked-now")]
+    [HttpGet("workspace/{workspaceId}/booked-today")]
     public async Task<IActionResult> GetCurrentlyBookedDesks(int workspaceId)
     {
         var response = await _deskRepository.GetCurrentlyBookedDesksByWorkspaceId(workspaceId);
