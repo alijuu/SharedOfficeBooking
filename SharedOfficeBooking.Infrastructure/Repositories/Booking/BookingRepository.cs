@@ -1,3 +1,5 @@
+using System.Globalization;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using SharedOfficeBooking.Application.Dtos;
 using SharedOfficeBooking.Domain.Entities;
@@ -8,13 +10,15 @@ namespace SharedOfficeBooking.Infrastructure.Repositories.Booking;
 public class BookingRepository : IBookingRepository
 {
     private readonly SharedOfficeBookingDbContext _db;
+    private readonly IMapper _mapper;
 
-    public BookingRepository(SharedOfficeBookingDbContext db)
+    public BookingRepository(SharedOfficeBookingDbContext db, IMapper mapper)
     {
         _db = db;
+        _mapper = mapper;
     }
 
-    public async Task<ServiceResponse<Domain.Entities.Booking>> CreateBookingAsync(BookingCreateDto dto)
+    public async Task<ServiceResponse<Domain.Entities.Booking>> CreateBookingAsync(Guid userId, BookingCreateDto dto)
     {
         var response = new ServiceResponse<Domain.Entities.Booking>();
 
@@ -89,7 +93,7 @@ public class BookingRepository : IBookingRepository
 
         var booking = new Domain.Entities.Booking
         {
-            UserId = dto.UserId,
+            UserId = userId,
             DeskId = dto.DeskId,
             StartTime = startTime,
             EndTime = endTime,
@@ -125,6 +129,41 @@ public class BookingRepository : IBookingRepository
             .ToList();
 
         response.Message = "Bookings retrieved successfully.";
+        return response;
+    }
+
+
+    public async Task<ServiceResponse<List<UserBookingsDto>>> GetBookingsForUserAsync(Guid userId)
+    {
+        var response = new ServiceResponse<List<UserBookingsDto>>();
+
+        // Eagerly load Desk → Workspace so we can read Name, ImageUrl, etc.
+        var bookings = await _db.Bookings
+            .Where(b => b.UserId == userId)
+            .Include(b => b.Desk)
+            .ThenInclude(d => d.Workspace)
+            .OrderByDescending(b => b.StartTime)
+            .ToListAsync();
+
+        var nowUtc = DateTime.UtcNow;
+
+        var bookingDtos = bookings.Select(b =>
+        {
+            var workspace = b.Desk.Workspace!; // not null
+            return new UserBookingsDto()
+            {
+                Id = b.Id.ToString(),
+                Date = b.StartTime.ToString("dd. MMMM yyyy", CultureInfo.InvariantCulture),
+                Location = workspace.Name,
+                ThumbnailUrl = workspace.ImageUrl,
+                DurationHrs = (b.EndTime - b.StartTime).TotalHours,
+                Price = 30M, // mock for now; later move price to Desk or Booking
+                Status = (b.EndTime > nowUtc) ? "upcoming" : "past"
+            };
+        }).ToList();
+
+        response.Data = bookingDtos;
+        response.Message = "User bookings retrieved successfully.";
         return response;
     }
 }

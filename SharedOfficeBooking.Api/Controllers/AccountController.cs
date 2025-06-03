@@ -120,6 +120,7 @@ public class AccountController : ControllerBase
         var authClaims = new List<Claim>
         {
             new Claim(ClaimTypes.Name, user.UserName),
+            new Claim(ClaimTypes.NameIdentifier, user.Id),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 
@@ -133,7 +134,7 @@ public class AccountController : ControllerBase
         var token = new JwtSecurityToken(
             issuer: _jwtSettings.ValidIssuer,
             audience: _jwtSettings.ValidAudience,
-            expires: DateTime.UtcNow.AddHours(3),
+            expires: DateTime.UtcNow.AddDays(2),
             claims: authClaims,
             signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
         );

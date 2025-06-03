@@ -1,4 +1,6 @@
+using System.Security.Claims;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SharedOfficeBooking.Application.Dtos;
 using SharedOfficeBooking.Domain.Helpers;
@@ -19,10 +21,24 @@ public class BookingController : ControllerBase
         _mapper = mapper;
     }
 
+    [Authorize]
     [HttpPost]
     public async Task<IActionResult> CreateBooking([FromBody] BookingCreateDto dto)
     {
-        var result = await _repo.CreateBookingAsync(dto);
+        // 1) Get the user ID from the token
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+        if (userIdClaim == null 
+            || !Guid.TryParse(userIdClaim.Value, out var userId))
+        {
+            return Unauthorized(new ServiceResponse<string>
+            {
+                Success = false,
+                Message = "Invalid token or user ID."
+            });
+        }
+
+        // 2) Call CreateBookingAsync with the extracted userId + dto
+        var result = await _repo.CreateBookingAsync(userId, dto);
 
         if (!result.Success)
             return BadRequest(result);
@@ -50,4 +66,23 @@ public class BookingController : ControllerBase
             Message = result.Message
         });
     }
+    
+    [Authorize]
+    [HttpGet("user")]
+    public async Task<IActionResult> GetBookingsForCurrentUser()
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+        if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
+        {
+            return Unauthorized(new ServiceResponse<string> { Success = false, Message = "Invalid token or user ID." });
+        }
+
+        var result = await _repo.GetBookingsForUserAsync(userId);
+
+        if (!result.Success)
+            return BadRequest(result);
+
+        return Ok(result);
+    }
+
 }
